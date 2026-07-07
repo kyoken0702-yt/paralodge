@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { EventEmitter } = require('node:events');
 const { server } = require('../src/server');
+const { handleApi } = require('../src/api-handler');
 const {
   VERSION,
   ROUTES,
@@ -54,6 +56,29 @@ function mainContent(html) {
   return html.match(/<main class="page">([\s\S]*?)<\/main>/)?.[1] || html;
 }
 
+async function callApi(method, url, body = null) {
+  const req = new EventEmitter();
+  req.method = method;
+  req.url = url;
+  const res = {
+    statusCode: 200,
+    headers: {},
+    body: '',
+    setHeader(key, value) {
+      this.headers[key] = value;
+    },
+    end(value = '') {
+      this.body += value;
+      this.ended = true;
+    }
+  };
+  const promise = handleApi(req, res);
+  if (body) req.emit('data', Buffer.from(JSON.stringify(body)));
+  req.emit('end');
+  const handled = await promise;
+  return { handled, statusCode: res.statusCode, json: JSON.parse(res.body || '{}') };
+}
+
 test('版本名与首页中文首发文案正确', () => {
   const html = renderHomePage('/');
   assert.equal(VERSION, 'Paralodge v1.8 中文首发完整版');
@@ -80,7 +105,7 @@ test('首页采用单一手机 app 形式并先给用户空间归属感', () => 
   for (const word of ['1. 愿力大厅', '2. 公寓', '3. 聚会间', '4. 商业街', '5. 记忆墙', '6. 陪护室']) {
     assert.match(main, new RegExp(word));
   }
-  for (const word of ['先推开这栋楼的门', '找一个精神家园', '找少数懂你的人', '把愿望推向现实', '安放旧照片和念想', '给等待的人留一盏灯']) {
+  for (const word of ['我想先说今晚压着我的事', '我想找一间能安放自己的房间', '我想看看有没有人也在这一关', '我想把一个愿望推向现实', '我想把旧照片和念想放下', '我在陪病人，也想有人懂家属的累']) {
     assert.match(main, new RegExp(word));
   }
   for (const word of ['异乡这一关', '工作这一关', '家庭这一关', '孤独这一关', '重启这一关', '等待这一关', '记忆这一关', '小店这一关']) {
@@ -100,22 +125,22 @@ test('首页采用单一手机 app 形式并先给用户空间归属感', () => 
 test('空间页采用手机 app 形式并先让用户点击进入具体位置', () => {
   const html = renderHomePage('/space/care-room');
   assert.match(html, /data-mobile-space="care-room"/);
-  assert.match(html, /阿青姐：守着的人，也被守着。/);
+  assert.match(html, /阿青姐：陪着病人的人，也需要有人陪一下。/);
   assert.doesNotMatch(mainContent(html), /绑定 LINE/);
   assert.doesNotMatch(mainContent(html), /app-actions/);
-  assert.match(html, /选一个守候的位置/);
-  assert.match(html, /点一盏灯，去看看正在等消息的人/);
-  assert.match(html, /等待床/);
-  assert.match(html, /陪护灯/);
-  assert.match(html, /守候椅/);
+  assert.match(html, /选一个家属守候的位置/);
+  assert.match(html, /心关会落在病房外、家属灯下、守夜椅边/);
+  assert.match(html, /等候床/);
+  assert.match(html, /家属灯/);
+  assert.match(html, /守夜椅/);
   assert.match(html, /进去看看/);
   assert.match(html, /href="\/gate\/care-room\/waiting-bed"/);
-  assert.match(html, /这里也有人这样撑着/);
-  assert.match(html, /我也在这一关/);
-  assert.match(html, /留一灯/);
+  assert.match(html, /这些心关会落在这里/);
+  assert.doesNotMatch(mainContent(html), /data-paralodge-action="same"/);
+  assert.doesNotMatch(mainContent(html), /data-paralodge-action="lamp"/);
   assert.match(html, /正在发生/);
-  assert.match(html, /等待床旁边多了一盏灯/);
-  assert.match(html, /陪护灯被人轻轻护了一次/);
+  assert.match(html, /病房外的等候床旁多了一盏灯/);
+  assert.match(html, /家属灯被人轻轻护了一次/);
   assert.doesNotMatch(mainContent(html), /为这段等待点一盏灯/);
   assert.doesNotMatch(mainContent(html), /护住这段等待/);
   for (const space of ['愿力大厅', '公寓', '聚会间', '商业街', '陪护室', '记忆墙']) {
@@ -134,6 +159,8 @@ test('房间详情先看见同类，再出现低压力互动和发愿入口', ()
   assert.match(html, /data-kin-confirm/);
   assert.match(html, /个同关的人来过这里/);
   assert.match(html, /盏灯还亮着/);
+  assert.match(html, /对方会知道有人同路/);
+  assert.match(html, /一楼小桌/);
   assert.match(html, /要不要也把你的愿牌挂在异乡室？/);
   assert.match(html, /安放进这间房/);
   assert.match(html, /放下我的愿牌/);
@@ -313,7 +340,7 @@ test('房型 9 个并包含待定室', () => {
     assert.ok(ROOM_TYPES.some((item) => item.name === room), room);
   }
   assert.match(html, /选一扇门进去/);
-  assert.match(html, /先点一个像你的房间/);
+  assert.match(html, /先点一个像你的门牌/);
   assert.match(html, /待定室 901/);
   assert.ok(ROOM_TYPES.findIndex((item) => item.name === '待定室') > ROOM_TYPES.findIndex((item) => item.name === '希望室'));
   assertNoForbidden(html);
@@ -473,10 +500,10 @@ test('空间页面有主画面舞台与灯光状态变化', () => {
 test('温柔空状态文案存在且冷空状态不出现', () => {
   const html = ROUTES.map((route) => renderHomePage(route)).join('\n');
   for (const phrase of [
-    '先点一个像你的房间',
+    '先点一个像你的门牌',
     '我想开自己的小店',
-    '点一盏灯，去看看正在等消息的人',
-    '点一面墙，把没说出口的话放进去'
+    '心关会落在病房外、家属灯下、守夜椅边',
+    '心关会落在照片、信和回不去的地方'
   ]) {
     assert.match(html, new RegExp(phrase));
   }
@@ -493,4 +520,43 @@ test('路由解析保持中文首发楼内空间逻辑', () => {
   assert.equal(resolveRoute('/space/apartment').space.name, '公寓');
   assert.equal(resolveRoute('/building').type, 'building');
   assert.equal(resolveRoute('/unknown').type, 'home');
+});
+
+test('API fallback 支持匿名身份、真实愿牌读取和互动写入', async () => {
+  const identity = await callApi('POST', '/api/identity', { guestId: 'guest-test-1' });
+  assert.equal(identity.handled, true);
+  assert.equal(identity.statusCode, 200);
+  assert.equal(identity.json.guest.guest_id, 'guest-test-1');
+
+  const wishes = await callApi('GET', '/api/wishes?spaceKey=apartment&gateKey=foreign&limit=3');
+  assert.equal(wishes.statusCode, 200);
+  assert.equal(wishes.json.ok, true);
+  assert.equal(wishes.json.source, 'fallback');
+  assert.ok(wishes.json.wishes.length >= 1);
+
+  const created = await callApi('POST', '/api/wishes', {
+    guestId: 'guest-test-1',
+    spaceKey: 'apartment',
+    gateKey: 'foreign',
+    roomLabel: '异乡室',
+    text: '今晚先把这句话放在异乡室'
+  });
+  assert.equal(created.statusCode, 201);
+  assert.equal(created.json.wish.room_label, '异乡室');
+
+  const action = await callApi('POST', '/api/actions', {
+    guestId: 'guest-test-1',
+    wishId: created.json.wish.id,
+    kind: 'same'
+  });
+  assert.equal(action.statusCode, 201);
+  assert.equal(action.json.reaction.kind, 'same');
+
+  const meetup = await callApi('POST', '/api/meetups', {
+    guestId: 'guest-test-1',
+    sourceSpace: 'apartment',
+    sourceGate: 'foreign'
+  });
+  assert.equal(meetup.statusCode, 201);
+  assert.equal(meetup.json.signup.status, 'interested');
 });

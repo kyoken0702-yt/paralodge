@@ -67,10 +67,10 @@ const SPACES = [
     floor: '1F',
     name: '愿力大厅',
     image: 'hall.png',
-    title: '推开平行公寓的门',
-    intent: '入口、传送',
-    aqing: '欢迎，夜归人，今晚你想去哪里？',
-    empty: '今晚，这栋楼刚刚亮灯，你可以先推门进去'
+    title: '先说今晚压着你的那一关',
+    intent: '先选心关，再送进对应空间',
+    aqing: '欢迎，夜归人，今晚你想把哪件事先放下来？',
+    empty: '今晚，这栋楼刚刚亮灯，你可以先选一关'
   },
   {
     key: 'meeting-room',
@@ -111,10 +111,10 @@ const SPACES = [
     floor: '4F',
     name: '陪护室',
     image: 'care-room.png',
-    title: '等待，或陪护一个人',
-    intent: '4F · 等待、守灯、陪护',
-    aqing: '守着的人，也被守着。',
-    empty: '这里很安静，可以先为正在撑住的人点一盏灯'
+    title: '给病人家属和陪护者的一盏灯',
+    intent: '4F · 家属、等待、守夜',
+    aqing: '陪着病人的人，也需要有人陪一下。',
+    empty: '这里很安静，可以先为正在守夜的家属留一盏灯'
   },
   {
     key: 'memory-wall',
@@ -130,12 +130,12 @@ const SPACES = [
 ];
 
 const HOME_PORTALS = [
-  { key: 'hall', label: '1. 愿力大厅', line: '先推开这栋楼的门' },
-  { key: 'apartment', label: '2. 公寓', line: '找一个精神家园' },
-  { key: 'meeting-room', label: '3. 聚会间', line: '找少数懂你的人' },
-  { key: 'commercial-street', label: '4. 商业街', line: '把愿望推向现实' },
-  { key: 'memory-wall', label: '5. 记忆墙', line: '安放旧照片和念想' },
-  { key: 'care-room', label: '6. 陪护室', line: '给等待的人留一盏灯' }
+  { key: 'hall', label: '1. 愿力大厅', line: '我想先说今晚压着我的事' },
+  { key: 'apartment', label: '2. 公寓', line: '我想找一间能安放自己的房间' },
+  { key: 'meeting-room', label: '3. 聚会间', line: '我想看看有没有人也在这一关' },
+  { key: 'commercial-street', label: '4. 商业街', line: '我想把一个愿望推向现实' },
+  { key: 'memory-wall', label: '5. 记忆墙', line: '我想把旧照片和念想放下' },
+  { key: 'care-room', label: '6. 陪护室', line: '我在陪病人，也想有人懂家属的累' }
 ];
 
 const GATES = [
@@ -233,14 +233,14 @@ const GATES = [
   {
     key: 'waiting',
     label: '等待这一关',
-    line: '我在等消息，也在等天亮',
+    line: '我在病房外等消息，也在等天亮',
     spaceKey: 'care-room',
     room: '陪护室',
-    aqing: '守着的人，也被守着',
+    aqing: '陪病人的家属，也需要有人替你留一盏灯',
     wishes: [
-      { meta: '陪护室 · 匿名住民', text: '不用说太多。有些等待，只要还有一盏灯，就不算完全孤单', lamps: 21 },
-      { meta: '陪护室 · 匿名住民', text: '希望明天能有一点好消息，哪怕只是一点点', lamps: 17 },
-      { meta: '夜归室 · 匿名住民', text: '我想撑到天亮，也想知道有人在旁边陪我撑着', lamps: 28 }
+      { meta: '陪护室 · 匿名家属', text: '希望今晚病房里平安一点，也希望我能撑到医生明天查房', lamps: 21 },
+      { meta: '陪护室 · 匿名家属', text: '希望明天能有一点好消息，哪怕只是一点点', lamps: 17 },
+      { meta: '陪护室 · 匿名家属', text: '我想陪他撑到天亮，也想知道有人在旁边陪我撑着', lamps: 28 }
     ]
   },
   {
@@ -286,9 +286,9 @@ const SPACE_PLACES = {
     { key: 'night-talk-table', gateKey: 'work', name: '夜话桌', line: '我今晚只想被听见一下' }
   ],
   'care-room': [
-    { key: 'waiting-bed', gateKey: 'waiting', name: '等待床', line: '我在等消息，也在等天亮' },
-    { key: 'care-lamp', gateKey: 'family', name: '陪护灯', line: '我在照顾别人，也快撑不住了' },
-    { key: 'guard-chair', gateKey: 'lonely', name: '守候椅', line: '我不知道结果，只能先陪着' }
+    { key: 'waiting-bed', gateKey: 'waiting', name: '等候床', line: '我在病房外等消息，也在等天亮' },
+    { key: 'care-lamp', gateKey: 'family', name: '家属灯', line: '我在照顾病人，也快撑不住了' },
+    { key: 'guard-chair', gateKey: 'lonely', name: '守夜椅', line: '我不知道结果，只能先陪着' }
   ],
   'memory-wall': [
     { key: 'old-photo', gateKey: 'memory', name: '旧照片', line: '有些旧照片，我还舍不得放下' },
@@ -394,15 +394,15 @@ const CARE_CARDS = [
 const RETURN_TYPES = ['已完成', '还在路上', '暂时放下', '换一个愿望继续走'];
 const OFFLINE_FEEDBACK = [
   '有人给你的愿望点了一盏灯',
-  '有人护住了你的灯火',
-  '你的房间还亮着'
+  '有人说，他也在你这一关',
+  '有人把“愿你过关”留在你的门边'
 ];
 const SPACE_HAPPENINGS = {
   hall: ['一盏新灯刚刚亮起', '有人推开门，又停了一会儿'],
   apartment: ['异乡室刚刚有人留了一灯', '夜归室有人说，今晚想睡个好觉'],
   'meeting-room': ['同路桌有人按下了我也在这一关', '孤独桌多了一盏灯'],
   'commercial-street': ['小店门牌刚刚亮了一下', '有人把店愿写在灯下'],
-  'care-room': ['等待床旁边多了一盏灯', '陪护灯被人轻轻护了一次'],
+  'care-room': ['病房外的等候床旁多了一盏灯', '家属灯被人轻轻护了一次'],
   'memory-wall': ['旧照片旁边有人留了一句念想', '未寄出的信下面多了一盏灯']
 };
 const BUILDING_BROADCASTS = [
@@ -416,7 +416,7 @@ const SPACE_SCENES = {
   apartment: { title: '公寓走廊', line: '门牌静静亮着，有些房间还在等人回来', anchor: '门牌灯' },
   'meeting-room': { title: '夜里小桌', line: '几张空椅子，给还没说出口的话留着', anchor: '桌上灯' },
   'commercial-street': { title: '夜市小店门口', line: '灯箱亮着，门帘后面有人整理愿望', anchor: '店灯' },
-  'care-room': { title: '走廊长椅', line: '窗外像有雨，椅边有一盏暖灯', anchor: '陪护灯' },
+  'care-room': { title: '病房外的长椅', line: '家属在等消息，椅边有一盏暖灯', anchor: '家属灯' },
   'memory-wall': { title: '照片墙', line: '便签、旧照片和一点微光，都还没有散', anchor: '墙上灯' }
 };
 const SPACE_MOODS = {
@@ -424,7 +424,7 @@ const SPACE_MOODS = {
   apartment: { tint: 'rgba(255,168,86,.20)', depth: '#190f0a', note: '走廊尽头有一扇门亮着' },
   'meeting-room': { tint: 'rgba(226,147,80,.18)', depth: '#20110c', note: '桌边还空着一把椅子' },
   'commercial-street': { tint: 'rgba(255,190,92,.22)', depth: '#211107', note: '门帘后面有烟火气' },
-  'care-room': { tint: 'rgba(255,214,148,.18)', depth: '#151210', note: '长椅旁边有人守着' },
+  'care-room': { tint: 'rgba(255,214,148,.18)', depth: '#151210', note: '病房外，有家属还在守着' },
   'memory-wall': { tint: 'rgba(186,146,255,.14)', depth: '#101225', note: '旧照片边缘有一点微光' }
 };
 const PRIVACY_RULES = [
@@ -658,27 +658,34 @@ function renderBuilding() {
 }
 
 function renderHallWishFlow() {
-  return `<section class="wish-flow" data-wish-flow>
-    <section class="paper-card wish-form-card">
-      <p>发愿</p>
-      <h3>放下一个愿望</h3>
-      <strong>我现在最想过的一关是：</strong>
-      <textarea aria-label="愿望内容">希望能在异乡找到属于自己的位置，慢慢站稳脚跟，不再那么焦虑和孤单。</textarea>
-      <div class="chip-row">${['工作', '学习', '家庭', '异乡', '重启'].map((tag) => `<button type="button">${tag}</button>`).join('')}</div>
-    </section>
-    <section class="destination-actions">
-      <button type="button">只给自己看</button>
-      <button type="button">匿名放到对应房间</button>
-      <button type="button">匿名放到聚会间</button>
+  return `<section class="space-feed entry-feed scene-paper hall-gate-flow" data-hall-gate-flow data-cinema-step="resonance">
+    <div class="scene-caption">
+      <span>先选一关</span>
+      <h3>今晚，哪件事最压着你？</h3>
+      <p>心关是入口，空间是归属，选中以后，愿力会把你送进对应的房间、桌边、灯下或墙前</p>
+    </div>
+    <section class="gate-choice-grid">
+      ${GATES.map((gate) => {
+        const space = spaceByKey(gate.spaceKey);
+        const place = placeByGate(gate.spaceKey, gate.key);
+        const href = place ? `/gate/${space.key}/${place.key}` : `/gate/${gate.key}`;
+        return `<a href="${href}" data-space-visit="${esc(space.key)}">
+          <span>${esc(space.name)}</span>
+          <strong>${esc(gate.label)}</strong>
+          <em>${esc(gate.line)}</em>
+        </a>`;
+      }).join('')}
     </section>
   </section>`;
 }
 
 function renderEmotionWishCard(card) {
-  return `<article class="feed-card emotion-card">
+  const wishId = card.id || `sample-${Buffer.from(card.text).toString('base64').slice(0, 10).replace(/[^a-zA-Z0-9]/g, '')}`;
+  return `<article class="feed-card emotion-card" data-wish-id="${esc(wishId)}">
     <span>${esc(card.meta)}</span>
     <p>${esc(card.text)}</p>
     <b>${card.lamps} 盏灯</b>
+    <em>你做的动作，对方会收到一条回响</em>
     <div><button type="button" data-paralodge-action="same">我也在这一关</button><button type="button" data-paralodge-action="lamp">给你留一灯</button><button type="button" data-paralodge-action="bless">愿你过关</button></div>
   </article>`;
 }
@@ -710,11 +717,11 @@ function renderSimilarLights(spaceKey) {
     .slice(0, 2);
   if (!cards.length) return '';
   return `<section class="similar-lights" data-similar-lights>
-    <strong>这里也有人这样撑着</strong>
+    <strong>这些心关会落在这里</strong>
     ${cards.map(({ gate, wish }) => `<article>
       <span>${esc(gate.room)} · 匿名住民</span>
       <p>${esc(wish.text)}</p>
-      <div><button type="button" data-paralodge-action="same">我也在这一关</button><button type="button" data-paralodge-action="lamp">留一灯</button></div>
+      <b>${esc(gate.label)}</b>
     </article>`).join('')}
   </section>`;
 }
@@ -722,7 +729,7 @@ function renderSimilarLights(spaceKey) {
 function renderSpaceEntry(spaceKey, title, line) {
   return `<section class="space-feed entry-feed scene-paper" data-cinema-step="resonance" data-space-entry="${esc(spaceKey)}">
     <div class="scene-caption">
-      <span>看见</span>
+      <span>选位置</span>
       <h3>${esc(title)}</h3>
       <p>${esc(line)}</p>
     </div>
@@ -753,16 +760,26 @@ function renderGate(route) {
           note: '愿牌贴在门边，灯在下面亮着'
         })}
         <section class="kin-confirm" data-kin-confirm>
-          <strong>${fellowCount} 个同关的人来过这里</strong>
-          <span>${totalLamps} 盏灯还亮着，有人说过“我也在这一关”</span>
+          <strong>你不是一个人在这一关</strong>
+          <span>${fellowCount} 个同关的人来过这里，${totalLamps} 盏灯还亮着，有人说过“我也在这一关”</span>
+          <em>你做任何动作，对方都会收到一条温柔回响；你也会知道这盏灯已经被看见</em>
         </section>
-        <section class="space-feed emotion-feed gate-feed" data-gate-feed>
+        <section class="space-feed emotion-feed gate-feed" data-gate-feed data-space-key="${esc(gateSpace.key)}" data-gate-key="${esc(gate.key)}" data-room-label="${esc(target.room)}">
           ${gate.wishes.map(renderEmotionWishCard).join('')}
         </section>
         <section class="gate-response">
           <strong>要不要也把你的愿牌挂在${esc(target.room)}？</strong>
           <span>先看见同类，留下一盏灯，再把自己的话安放进这间房</span>
           <p><a href="${esc(target.wishPath)}">放下我的愿牌</a><a href="${esc(target.gatePath)}">先继续看看</a></p>
+        </section>
+        <section class="interaction-ripple" data-interaction-ripple>
+          <strong>互动会怎样发生？</strong>
+          <span>你点“我也在这一关”，对方会知道有人同路；你留一灯，对方的房间会亮一点；你祝他过关，这句话会留在门边</span>
+        </section>
+        <section class="offline-table" data-offline-table>
+          <strong>一楼小桌</strong>
+          <span>如果你已经在这里留过灯，这周末可以看看一楼小桌，可以只听，不必说真名</span>
+          <p><a href="/messages#small-table" data-small-table-intent data-source-space="${esc(gateSpace.key)}" data-source-gate="${esc(gate.key)}">看看一楼小桌</a><a href="${esc(target.gatePath)}">先不去</a></p>
         </section>
       </section>
       ${renderSpaceTabs(gateSpace.path)}
@@ -805,7 +822,7 @@ function renderWishPage(route = null) {
             <p>${esc(prompt)}</p>
             <textarea aria-label="愿望内容">${esc(active.wishes[0]?.text || SAMPLE_WISH.text)}</textarea>
             <div class="chip-row">${GATES.map((item) => `<a href="/wish/${item.key}">${esc(item.room)}</a>`).join('')}</div>
-            <button type="button" class="primary-action" data-paralodge-action="save-wish" data-room-key="${esc(active.key)}" data-room-label="${esc(gate ? targetRoom : active.room)}" data-room-full-label="${esc(roomNumberFor(gate ? targetRoom : active.room))}" data-room-link="${esc(roomLink)}">${esc(buttonText)}</button>
+            <button type="button" class="primary-action" data-paralodge-action="save-wish" data-space-key="${esc(targetSpace.key)}" data-place-key="${esc(routeContext?.place?.key || '')}" data-room-key="${esc(active.key)}" data-room-label="${esc(gate ? targetRoom : active.room)}" data-room-full-label="${esc(roomNumberFor(gate ? targetRoom : active.room))}" data-room-link="${esc(roomLink)}">${esc(buttonText)}</button>
           </section>
           <section class="wish-success">
             <strong>${gate ? `愿牌已挂进${esc(targetRoom)}` : '愿牌已挂上'}</strong>
@@ -822,15 +839,15 @@ function renderWishPage(route = null) {
 }
 
 function renderMeetingRoom() {
-  return renderSpaceEntry('meeting-room', '选一张桌坐下', '点一张桌，先听听同桌的人怎么说');
+  return renderSpaceEntry('meeting-room', '选一张桌坐下', '心关会落成一张桌，点进去以后，才开始同关、留灯和发愿');
 }
 
 function renderCareRoom() {
-  return renderSpaceEntry('care-room', '选一个守候的位置', '点一盏灯，去看看正在等消息的人');
+  return renderSpaceEntry('care-room', '选一个家属守候的位置', '心关会落在病房外、家属灯下、守夜椅边，点进去以后再留灯');
 }
 
 function renderMemoryWall() {
-  return renderSpaceEntry('memory-wall', '选一处安放念想', '点一面墙，把没说出口的话放进去');
+  return renderSpaceEntry('memory-wall', '选一处安放念想', '心关会落在照片、信和回不去的地方，点进去以后再放下一句话');
 }
 
 function renderSpace(space) {
@@ -862,13 +879,13 @@ function renderSpace(space) {
 }
 
 function renderApartment() {
-  return renderSpaceEntry('apartment', '选一扇门进去', '不要先想清楚，先点一个像你的房间');
+  return renderSpaceEntry('apartment', '选一扇门进去', '心关会落成一间房，不要先想清楚，先点一个像你的门牌');
 }
 
 function renderCommercialStreet() {
   return `<section class="shop-system entry-feed" data-shop-types>
     <h3>选一块小店门牌</h3>
-    <p>点一块门牌，先看看别人怎样把愿望推向现实</p>
+    <p>心关会落成一块门牌，点进去以后，再把愿望推向现实</p>
     ${renderPlaceCards('commercial-street')}
     <details class="shop-preview"><summary>我想开自己的小店</summary><article class="shop-card" data-shop-card>
       <h3>开一间小店</h3>
@@ -968,6 +985,16 @@ function renderMessages() {
             <strong>你离开后的楼内灯火</strong>
             ${BUILDING_BROADCASTS.map(([place, text]) => `<article><span>${esc(place)}</span><p>${esc(text)}</p></article>`).join('')}
           </section>
+          <section class="building-broadcast reply-board" data-reply-board>
+            <strong>别人收到你的动作后</strong>
+            <article><span>同关回响</span><p>有人看见你说“我也在这一关”，房间里多了一点安静</p></article>
+            <article><span>留灯回响</span><p>你留的灯已经亮在对方愿牌旁边</p></article>
+          </section>
+          <section class="small-table-card" id="small-table" data-small-table>
+            <strong>一楼小桌</strong>
+            <p>这周末有一张小桌，可以只听，不必说真名。先从线上留灯开始，愿意再把这盏灯带到现实里</p>
+            <a href="https://line.me/" data-small-table-intent data-source-space="hall" data-source-gate="small-table">我想留个座</a>
+          </section>
           <div class="trace-grid" data-dynamic-messages>${OFFLINE_FEEDBACK.map((item) => `<article><strong>${esc(item)}</strong><span>这栋楼很安静，但你的灯还亮着</span></article>`).join('')}</div>
         </section>
       </section>
@@ -997,10 +1024,11 @@ function renderMe() {
 	            <article><strong data-me-return-status>还在路上</strong><span>归来状态</span></article>
 	          </div>
 	          <section class="my-ledger-card metrics-card" data-metrics-card>
-	            <span>内测观察</span>
-	            <strong data-metric-top-space>还在等你推门</strong>
-	            <p data-metric-top-action>动作还很安静，先点一盏灯看看</p>
-	          </section>
+            <span>内测观察</span>
+            <strong data-metric-top-space>还在等你推门</strong>
+            <p data-metric-top-action>动作还很安静，先点一盏灯看看</p>
+            <small data-metric-funnel>路径观察：空间 → 心关 → 留灯 → 愿牌 → 我的房间 → 一楼小桌</small>
+          </section>
 	          <article class="my-ledger-card">
 	            <span>最近一件事</span>
             <strong data-me-latest>还没有新的灯火</strong>
@@ -1060,10 +1088,10 @@ function renderHomePage(pathname = '/') {
 <style>
 body[data-route="/"] .page,body[data-route^="/gate/"] .page,body[data-route="/wish"] .page,body[data-route^="/space/"] .page,body[data-route="/my-room"] .page,body[data-route="/my-shop"] .page,body[data-route="/messages"] .page,body[data-route="/me"] .page{width:min(430px,100%);min-height:100vh;padding:0;gap:0}
 body[data-route="/"] .app-top,body[data-route^="/gate/"] .app-top,body[data-route="/wish"] .app-top,body[data-route^="/space/"] .app-top,body[data-route="/my-room"] .app-top,body[data-route="/my-shop"] .app-top,body[data-route="/messages"] .app-top,body[data-route="/me"] .app-top,body[data-route="/"] .footer-note,body[data-route^="/gate/"] .footer-note,body[data-route="/wish"] .footer-note,body[data-route^="/space/"] .footer-note,body[data-route="/my-room"] .footer-note,body[data-route="/my-shop"] .footer-note,body[data-route="/messages"] .footer-note,body[data-route="/me"] .footer-note{display:none}
-.aqing-avatar{position:relative;overflow:hidden;text-indent:-999px;background-image:var(--space-image)!important;background-size:cover!important;background-position:center!important;box-shadow:0 0 0 1px rgba(255,228,166,.50),0 0 18px rgba(244,201,120,.24)}
+.aqing-avatar{position:relative;overflow:hidden;text-indent:-999px;background-image:var(--space-image)!important;background-size:185%!important;background-position:50% 31%!important;box-shadow:0 0 0 1px rgba(255,228,166,.50),0 0 18px rgba(244,201,120,.24)}
 .aqing-avatar:before,.aqing-avatar:after{content:none}
 .aqing-bubble{padding:7px 12px 7px 8px}
-.aqing-avatar{width:38px!important;height:38px!important;flex-basis:38px!important}
+.aqing-avatar{width:44px!important;height:44px!important;flex-basis:44px!important}
 .aqing-bubble strong{font-size:14px}
 .app-screen{padding:10px 14px 10px}
 .phone-hero h3{font-size:clamp(25px,6.8vw,32px);letter-spacing:0;line-height:1.08}
@@ -1106,6 +1134,11 @@ body[data-route="/"] .app-top,body[data-route^="/gate/"] .app-top,body[data-rout
 .gate-grid a{min-height:86px}
 .gate-grid span{color:#ffe4a6;font-size:12px}
 .gate-grid strong{font-size:14px;line-height:1.2}
+.gate-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.gate-choice-grid a{min-height:84px;display:grid;align-content:end;border:1px solid rgba(122,79,23,.18);border-radius:15px;background:linear-gradient(145deg,rgba(255,248,236,.82),rgba(228,198,156,.78));color:#2d1c10;padding:10px;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+.gate-choice-grid span{color:#8a5a1b;font-size:11px;font-weight:900}
+.gate-choice-grid strong{font-size:15px;line-height:1.16}
+.gate-choice-grid em{margin-top:4px;color:#5f422c;font-style:normal;font-size:12px;line-height:1.28;font-weight:650}
 .place-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px}
 .place-card{min-height:70px;display:grid;align-content:end;border:1px solid rgba(255,228,166,.26);border-radius:14px;background:linear-gradient(145deg,rgba(87,47,24,.52),rgba(5,8,14,.68));padding:9px;box-shadow:inset 0 -24px 34px rgba(0,0,0,.32)}
 .place-card:first-child{grid-column:span 2}
@@ -1122,9 +1155,7 @@ body[data-route="/"] .app-top,body[data-route^="/gate/"] .app-top,body[data-rout
 .similar-lights article{border-radius:15px;background:rgba(245,225,198,.92);color:#2d1c10;padding:11px;box-shadow:0 12px 28px rgba(0,0,0,.20)}
 .similar-lights span{display:block;color:#8a5a1b;font-size:11px;font-weight:900}
 .similar-lights p{margin:5px 0 9px!important;color:#2d1c10!important;font-size:13px!important;line-height:1.5!important;font-weight:650!important}
-.similar-lights div{display:flex;gap:7px}
-.similar-lights button{flex:1;min-height:30px;border:1px solid rgba(122,79,23,.28);border-radius:999px;background:#ead2a8;color:#3a2414;font:inherit;font-size:12px;font-weight:900}
-.similar-lights button:last-child{border-color:#9f6b1c;background:#9f6b1c;color:#fff2cf}
+.similar-lights b{display:inline-block;width:fit-content;border-radius:999px;background:rgba(138,90,27,.12);color:#8a5a1b;padding:4px 8px;font-size:11px}
 .live-strip{display:grid;grid-template-columns:auto 1fr;gap:6px 8px;border:1px solid rgba(255,228,166,.20);border-radius:14px;background:rgba(5,8,14,.58);padding:9px}
 .live-strip strong{grid-row:span 2;color:var(--gold2);font-size:13px;white-space:nowrap}
 .live-strip span{color:rgba(255,247,232,.78);font-size:12px;font-weight:760;line-height:1.35}
@@ -1132,6 +1163,7 @@ body[data-route="/"] .app-top,body[data-route^="/gate/"] .app-top,body[data-rout
 .kin-confirm strong,.kin-confirm span{display:block}
 .kin-confirm strong{color:var(--gold2);font-size:17px}
 .kin-confirm span{margin-top:5px;color:rgba(255,247,232,.78);font-size:13px;line-height:1.4}
+.kin-confirm em{display:block;margin-top:7px;border-radius:12px;background:rgba(255,228,166,.10);color:#ffe4a6;padding:7px 9px;font-style:normal;font-size:12px;line-height:1.4}
 .gate-app-hero h3{font-size:clamp(24px,6.6vw,30px)}
 .gate-app-hero p{font-size:clamp(14px,3.8vw,17px)}
 .gate-action-layer{align-content:start}
@@ -1143,6 +1175,13 @@ body[data-route="/"] .app-top,body[data-route^="/gate/"] .app-top,body[data-rout
 .gate-response p{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0}
 .gate-response a{display:grid;place-items:center;min-height:38px;border-radius:999px;background:#ead2a8;color:#3a2414;font-weight:900;border:1px solid rgba(122,79,23,.28)}
 .gate-response a:first-child{background:#9f6b1c;color:#fff2cf}
+.offline-table,.small-table-card{border:1px solid rgba(255,228,166,.26);border-radius:16px;background:linear-gradient(145deg,rgba(8,23,36,.76),rgba(74,41,20,.42));padding:12px;box-shadow:0 12px 40px rgba(0,0,0,.26)}
+.offline-table strong,.small-table-card strong{display:block;color:var(--gold2);font-size:17px}
+.offline-table span,.small-table-card p{display:block;margin:5px 0 0;color:rgba(255,247,232,.78);font-size:13px;line-height:1.45}
+.offline-table p{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0}
+.offline-table a,.small-table-card a{display:grid;place-items:center;min-height:38px;border-radius:999px;background:#ead2a8;color:#3a2414;font-weight:900}
+.offline-table a:first-child,.small-table-card a{background:#12314b;color:#ffe4a6}
+.metrics-card small{display:block;margin-top:8px;color:rgba(255,247,232,.62);line-height:1.45}
 .wish-success{border:1px solid rgba(255,228,166,.28);border-radius:16px;background:rgba(5,8,14,.66);padding:12px}
 .wish-success strong,.wish-success span,.wish-success b{display:block}
 .wish-success strong{color:var(--gold2);font-size:18px}
@@ -1198,6 +1237,7 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 .destination-actions{display:grid;gap:8px}
 .destination-actions button{min-height:46px;border:1px solid rgba(58,36,20,.14);border-radius:14px;background:#f7ead6;color:#2d1c10;font:inherit;font-weight:900}
 .emotion-feed{display:grid;gap:10px}
+.emotion-card em{display:block;border-radius:12px;background:rgba(122,79,23,.10);color:#7a4f17;padding:7px 9px;font-style:normal;font-size:12px;line-height:1.35}
 .emotion-card div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .emotion-card button{white-space:normal;line-height:1.2}
 .paper-card span,.paper-card b{display:block;margin-top:10px;color:#6a4a33}
@@ -1218,6 +1258,9 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 .feed-card button{border:1px solid rgba(122,79,23,.28);background:#ead2a8;color:#3a2414}
 .emotion-card button:nth-child(2){background:#9f6b1c;color:#fff2cf;border-color:#9f6b1c}
 .emotion-card button:nth-child(3){background:#7d4f15;color:#fff2cf;border-color:#b78331}
+.interaction-ripple{border:1px solid rgba(255,228,166,.24);border-radius:16px;background:linear-gradient(145deg,rgba(245,225,198,.92),rgba(234,209,174,.86));color:#2d1c10;padding:12px;box-shadow:0 12px 34px rgba(0,0,0,.22)}
+.interaction-ripple strong,.interaction-ripple span{display:block}.interaction-ripple strong{color:#7a4f17;font-size:17px}.interaction-ripple span{margin-top:5px;color:#4b321f;font-size:13px;line-height:1.45}
+.reply-board article,.small-table-card{margin-top:8px}
 .primary-action{background:#12314b!important;color:#ffe4a6!important;border:1px solid rgba(255,228,166,.34)!important}
 .soft-action{background:#f7ead6!important;color:#3a2414!important;border:1px solid rgba(58,36,20,.14)!important}
 .return-box button{background:#f7ead6!important;color:#3a2414!important;border:1px solid rgba(58,36,20,.14)!important}
@@ -1363,6 +1406,59 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char];
     });
   }
+  function apiJson(path, payload){
+    return fetch(path, {
+      method: payload ? 'POST' : 'GET',
+      headers: payload ? {'Content-Type':'application/json'} : undefined,
+      body: payload ? JSON.stringify(payload) : undefined
+    }).then(function(response){
+      return response.json().then(function(data){
+        if (!response.ok || data.ok === false) throw new Error(data.error || 'api error');
+        return data;
+      });
+    });
+  }
+  function currentGuestId(){
+    const latest = JSON.parse(localStorage.getItem('paralodge_v18') || '{}');
+    latest.guest_id = latest.guest_id || state.guest_id;
+    localStorage.setItem('paralodge_v18', JSON.stringify(latest));
+    return latest.guest_id;
+  }
+  function renderClientWishCard(wish){
+    const reactions = wish.reactions || {};
+    const lamps = reactions.lamp || 0;
+    const same = reactions.same || 0;
+    const bless = reactions.bless || 0;
+    return '<article class="feed-card emotion-card" data-wish-id="' + escapeHtml(wish.id) + '">' +
+      '<span>' + escapeHtml(wish.room_label || '匿名房间') + ' · 匿名住民</span>' +
+      '<p>' + escapeHtml(wish.text || '') + '</p>' +
+      '<b>' + lamps + ' 盏灯 · ' + same + ' 位同关 · ' + bless + ' 句祝愿</b>' +
+      '<em>你做的动作，对方会收到一条回响</em>' +
+      '<div><button type="button" data-paralodge-action="same">我也在这一关</button><button type="button" data-paralodge-action="lamp">给你留一灯</button><button type="button" data-paralodge-action="bless">愿你过关</button></div>' +
+    '</article>';
+  }
+  function loadRealWishes(){
+    const feed = document.querySelector('[data-gate-feed]');
+    if (!feed) return;
+    const params = new URLSearchParams();
+    params.set('spaceKey', feed.getAttribute('data-space-key') || '');
+    params.set('gateKey', feed.getAttribute('data-gate-key') || '');
+    params.set('limit', '10');
+    apiJson('/api/wishes?' + params.toString()).then(function(data){
+      if (!data.wishes || !data.wishes.length) return;
+      feed.innerHTML = data.wishes.map(renderClientWishCard).join('');
+    }).catch(function(){});
+  }
+  function loadEchoes(){
+    const grid = document.querySelector('[data-dynamic-messages]');
+    if (!grid) return;
+    apiJson('/api/echoes?guestId=' + encodeURIComponent(currentGuestId())).then(function(data){
+      if (!data.echoes || !data.echoes.length) return;
+      grid.innerHTML = data.echoes.map(function(item){
+        return '<article><strong>' + escapeHtml(item.title) + '</strong><span>' + escapeHtml(item.text) + '</span></article>';
+      }).join('');
+    }).catch(function(){});
+  }
   function syncMessages(nextState){
     const grid = document.querySelector('[data-dynamic-messages]');
     if (!grid) return;
@@ -1433,13 +1529,33 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 	    const actionNames = { same: '我也在这一关', lamp: '留一灯', bless: '愿你过关', 'save-wish': '挂愿牌', 'daily-light': '今日点灯', return: '回来还愿' };
 	    if (topSpace && space) topSpace.textContent = '最常去：' + space[0] + ' · ' + space[1] + ' 次';
 	    if (topAction && action) topAction.textContent = '最常做：' + (actionNames[action[0]] || action[0]) + ' · ' + action[1] + ' 次';
+	    const funnel = document.querySelector('[data-metric-funnel]');
+	    if (funnel) {
+	      const wentSpace = Object.keys(metrics.spaces || {}).length > 0;
+	      const acted = Object.keys(metrics.actions || {}).length > 0;
+	      funnel.textContent = '路径观察：' + (wentSpace ? '已进空间' : '未进空间') + ' → ' + (acted ? '已有动作' : '未留动作') + ' → ' + (state.my_room ? '已有房间' : '未进房间');
+	    }
 	  }
 	  const feedback = {
-	    same: ['已同行', '你把一句“我也在这一关”留在了灯下'],
-	    lamp: ['已留灯', '今夜，你为一位住民留下一盏灯'],
-	    bless: ['已祝愿', '愿他这一关能过去']
+	    same: ['已同行', '你说了“我也在这一关”，对方会知道有人和他站在一起'],
+	    lamp: ['已留灯', '你为他留了一盏灯，他会收到这点光，你也会在回访里看见回响'],
+	    bless: ['已祝愿', '你把“愿你过关”留在门边，对方会知道有人祝他过关']
 	  };
-	  document.addEventListener('click', function(event){
+  document.addEventListener('click', function(event){
+	    const smallTable = event.target.closest('[data-small-table-intent]');
+	    if (smallTable) {
+	      const href = smallTable.getAttribute('href') || '/messages#small-table';
+	      event.preventDefault();
+	      apiJson('/api/meetups', {
+	        guestId: currentGuestId(),
+	        sourceSpace: smallTable.getAttribute('data-source-space') || '',
+	        sourceGate: smallTable.getAttribute('data-source-gate') || '',
+	        note: '想看看一楼小桌'
+	      }).catch(function(){}).finally(function(){
+	        window.location.href = href;
+	      });
+	      return;
+	    }
 	    const spaceLink = event.target.closest('[data-space-visit]');
 	    if (spaceLink) {
 	      trackMetric('space', spaceLink.getAttribute('data-space-visit'));
@@ -1451,11 +1567,14 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
     current.actions = current.actions || [];
 	    if (feedback[kind]) {
 	      const item = feedback[kind];
+	      const wishNode = button.closest('[data-wish-id]');
+	      const wishId = wishNode ? wishNode.getAttribute('data-wish-id') : '';
 	      button.textContent = item[0];
 	      button.disabled = true;
 	      current.actions.push({ kind: kind, at: new Date().toISOString() });
 	      save(current);
 	      trackMetric('action', kind);
+	      if (wishId) apiJson('/api/actions', { guestId: currentGuestId(), wishId: wishId, kind: kind }).catch(function(){});
 	      toast(item[1]);
 	      lightStage();
 	      echoKin(kind);
@@ -1465,6 +1584,7 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 	      return;
     }
     if (kind === 'save-wish') {
+      const textarea = document.querySelector('[data-wish-flow] textarea');
       const roomLabel = button.getAttribute('data-room-label') || '这间房';
       const fullLabel = button.getAttribute('data-room-full-label') || roomLabel;
       current.my_room = {
@@ -1476,6 +1596,17 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
       };
 	      save(current);
 	      trackMetric('action', 'save-wish');
+	      apiJson('/api/wishes', {
+	        guestId: currentGuestId(),
+	        spaceKey: button.getAttribute('data-space-key') || '',
+	        gateKey: button.getAttribute('data-room-key') || '',
+	        placeKey: button.getAttribute('data-place-key') || '',
+	        roomLabel: roomLabel,
+	        text: textarea ? textarea.value.trim() : ''
+	      }).then(function(data){
+	        if (data.wish && data.wish.id) current.last_wish_id = data.wish.id;
+	        save(current);
+	      }).catch(function(){});
 	      button.textContent = '已挂上';
 	      button.disabled = true;
 	      toast(roomLabel + '已经为你留灯');
@@ -1516,6 +1647,7 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 	      current.return_card = { status: status, text: text, at: new Date().toISOString() };
 	      save(current);
 	      trackMetric('action', 'return');
+	      apiJson('/api/returns', { guestId: currentGuestId(), wishId: current.last_wish_id || null, status: status, text: text }).catch(function(){});
       syncRoomState(current);
       syncMessages(current);
       const latest = document.querySelector('[data-return-latest] span');
@@ -1546,6 +1678,9 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 	  syncMessages(state);
 	  syncMe(state);
 	  syncMetrics();
+	  apiJson('/api/identity', { guestId: currentGuestId() }).catch(function(){});
+	  loadRealWishes();
+	  loadEchoes();
 }());
 </script>
 ${imagePreload}

@@ -2,6 +2,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const { renderHomePage } = require('./web/home-page');
+const { handleApi } = require('./api-handler');
 
 const ROOT = path.resolve(__dirname, '..');
 const PUBLIC_DIR = path.join(ROOT, 'public');
@@ -31,7 +32,8 @@ function serveStatic(req, res) {
   return true;
 }
 
-function requestHandler(req, res) {
+async function requestHandler(req, res) {
+  if (await handleApi(req, res)) return;
   if (req.url.startsWith('/assets/')) {
     if (serveStatic(req, res)) return;
     res.writeHead(404).end('Not found');

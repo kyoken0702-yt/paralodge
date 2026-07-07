@@ -1,4 +1,5 @@
 const { renderHomePage } = require('../src/web/home-page');
+const { handleApi } = require('../src/api-handler');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -12,7 +13,8 @@ function contentType(filePath) {
   return 'application/octet-stream';
 }
 
-module.exports = function handler(req, res) {
+module.exports = async function handler(req, res) {
+  if (await handleApi(req, res)) return;
   const pathname = (req.url || '/').split('?')[0];
   if (pathname.startsWith('/assets/')) {
     const filePath = path.normalize(path.join(PUBLIC_DIR, pathname.replace(/^\/+/, '')));
