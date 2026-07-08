@@ -717,10 +717,10 @@ function renderEmotionWishCard(card) {
   const same = card.reactions?.same ?? 0;
   const bless = card.reactions?.bless ?? 0;
   const countLine = card.reactions ? `${lamps} 盏灯 · ${same} 位同关 · ${bless} 句祝愿` : `${lamps} 盏灯`;
-  return `<article class="feed-card emotion-card" data-wish-id="${esc(wishId)}">
+  return `<article class="feed-card emotion-card" data-wish-id="${esc(wishId)}" data-lamp-count="${esc(lamps)}" data-same-count="${esc(same)}" data-bless-count="${esc(bless)}">
     <span>${esc(meta)}</span>
     <p>${esc(card.text)}</p>
-    <b>${esc(countLine)}</b>
+    <b data-reaction-counts>${esc(countLine)}</b>
     <em>你做的动作，对方会收到一条回响</em>
     <div><button type="button" data-paralodge-action="same">我也在这一关</button><button type="button" data-paralodge-action="lamp">给你留一灯</button><button type="button" data-paralodge-action="bless">愿你过关</button></div>
   </article>`;
@@ -797,7 +797,7 @@ function renderGate(route) {
         })}
         <section class="kin-confirm" data-kin-confirm>
           <strong>你不是一个人在这一关</strong>
-          <span>${fellowCount} 个同关的人来过这里，${totalLamps} 盏灯还亮着，有人说过“我也在这一关”</span>
+          <span data-kin-summary data-fellow-count="${esc(fellowCount)}" data-lamp-total="${esc(totalLamps)}">${fellowCount} 个同关的人来过这里，${totalLamps} 盏灯还亮着，有人说过“我也在这一关”</span>
           <em>你做任何动作，对方都会收到一条温柔回响；你也会知道这盏灯已经被看见</em>
         </section>
         <section class="space-feed emotion-feed gate-feed" data-gate-feed data-space-key="${esc(gateSpace.key)}" data-gate-key="${esc(gate.key)}" data-room-label="${esc(target.room)}">
@@ -1423,6 +1423,23 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 	    line.textContent = kind === 'same' ? '刚刚，有人和你站在同一关' : kind === 'lamp' ? '这盏灯让房间更亮了一点' : '这句祝愿已经留在门边';
 	    holder.appendChild(line);
 	  }
+  function updateWishCounters(kind, wishNode){
+    if (!wishNode) return;
+    const field = kind === 'same' ? 'sameCount' : kind === 'lamp' ? 'lampCount' : kind === 'bless' ? 'blessCount' : '';
+    if (!field) return;
+    wishNode.dataset[field] = String(Number(wishNode.dataset[field] || 0) + 1);
+    const lamp = Number(wishNode.dataset.lampCount || 0);
+    const same = Number(wishNode.dataset.sameCount || 0);
+    const bless = Number(wishNode.dataset.blessCount || 0);
+    const count = wishNode.querySelector('[data-reaction-counts]');
+    if (count) count.textContent = lamp + ' 盏灯 · ' + same + ' 位同关 · ' + bless + ' 句祝愿';
+    const summary = document.querySelector('[data-kin-summary]');
+    if (summary) {
+      if (kind === 'same') summary.dataset.fellowCount = String(Number(summary.dataset.fellowCount || 0) + 1);
+      if (kind === 'lamp') summary.dataset.lampTotal = String(Number(summary.dataset.lampTotal || 0) + 1);
+      summary.textContent = (summary.dataset.fellowCount || '0') + ' 个同关的人来过这里，' + (summary.dataset.lampTotal || '0') + ' 盏灯还亮着，有人说过“我也在这一关”';
+    }
+  }
 	  const currentRoute = document.body.getAttribute('data-route') || '/';
 	  if (currentRoute === '/') trackMetric('space', '愿力大厅');
 	  if (currentRoute.indexOf('/space/') === 0) {
@@ -1470,10 +1487,10 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
     const lamps = reactions.lamp || 0;
     const same = reactions.same || 0;
     const bless = reactions.bless || 0;
-    return '<article class="feed-card emotion-card" data-wish-id="' + escapeHtml(wish.id) + '">' +
+    return '<article class="feed-card emotion-card" data-wish-id="' + escapeHtml(wish.id) + '" data-lamp-count="' + lamps + '" data-same-count="' + same + '" data-bless-count="' + bless + '">' +
       '<span>' + escapeHtml(wish.room_label || '匿名房间') + ' · 匿名住民</span>' +
       '<p>' + escapeHtml(wish.text || '') + '</p>' +
-      '<b>' + lamps + ' 盏灯 · ' + same + ' 位同关 · ' + bless + ' 句祝愿</b>' +
+      '<b data-reaction-counts>' + lamps + ' 盏灯 · ' + same + ' 位同关 · ' + bless + ' 句祝愿</b>' +
       '<em>你做的动作，对方会收到一条回响</em>' +
       '<div><button type="button" data-paralodge-action="same">我也在这一关</button><button type="button" data-paralodge-action="lamp">给你留一灯</button><button type="button" data-paralodge-action="bless">愿你过关</button></div>' +
     '</article>';
@@ -1612,6 +1629,7 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 	      const wishId = wishNode ? wishNode.getAttribute('data-wish-id') : '';
 	      button.textContent = item[0];
 	      button.disabled = true;
+	      updateWishCounters(kind, wishNode);
 	      current.actions.push({ kind: kind, at: new Date().toISOString() });
 	      save(current);
 	      trackMetric('action', kind);
@@ -1644,6 +1662,8 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
       };
 	      save(current);
 	      trackMetric('action', 'save-wish');
+	      button.textContent = '正在挂上';
+	      button.disabled = true;
 	      apiJson('/api/wishes', {
 	        guestId: currentGuestId(),
 	        spaceKey: button.getAttribute('data-space-key') || '',
@@ -1654,17 +1674,20 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 	      }).then(function(data){
 	        if (data.wish && data.wish.id) current.last_wish_id = data.wish.id;
 	        save(current);
-	      }).catch(function(){});
-	      button.textContent = '已挂上';
-	      button.disabled = true;
-	      toast(roomLabel + '已经为你留灯');
+	        button.textContent = '已挂上';
+	        toast(roomLabel + '已经收下你的愿牌');
+	        setTimeout(function(){
+	          window.location.href = current.my_room.link || '/my-room';
+	        }, 700);
+	      }).catch(function(){
+	        button.textContent = '再试一次';
+	        button.disabled = false;
+	        toast('刚才没有挂上，请再试一次');
+	      });
 	      lightStage();
 	      syncMessages(current);
 	      syncMe(current);
 	      syncMetrics();
-	      setTimeout(function(){
-	        window.location.href = current.my_room.link || '/my-room';
-	      }, 900);
 	      return;
     }
     if (kind === 'daily-light') {

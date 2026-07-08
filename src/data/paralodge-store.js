@@ -37,6 +37,10 @@ const SAMPLE_ROWS = [
 const FALLBACK_WISHES = SAMPLE_ROWS.map((row) => ({ ...row, reactions: { ...row.reactions } }));
 const FALLBACK_REACTIONS = [];
 
+function isPublicWish(row) {
+  return row && !String(row.guest_id || '').startsWith('debug-');
+}
+
 function isConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY);
 }
@@ -104,6 +108,7 @@ function countReactions(rows, wishId) {
 async function listWishes({ spaceKey, gateKey, limit = 10 } = {}) {
   if (!isConfigured()) {
     return FALLBACK_WISHES
+      .filter(isPublicWish)
       .filter((row) => (!spaceKey || row.space_key === spaceKey) && (!gateKey || row.gate_key === gateKey))
       .slice(0, limit);
   }
@@ -112,6 +117,7 @@ async function listWishes({ spaceKey, gateKey, limit = 10 } = {}) {
   if (gateKey) filters.push(`gate_key=eq.${encodeURIComponent(gateKey)}`);
   filters.push(`order=created_at.desc`);
   filters.push(`limit=${Math.max(1, Math.min(Number(limit) || 10, 10))}`);
+  filters.push(`guest_id=not.like.debug-*`);
   const wishes = await supabaseFetch(`paralodge_wishes?${filters.join('&')}`);
   if (!wishes.length) return [];
   const ids = wishes.map((wish) => wish.id).join(',');

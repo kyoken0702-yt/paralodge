@@ -172,6 +172,14 @@ test('房间详情先看见同类，再出现低压力互动和发愿入口', ()
   for (const action of ['same', 'lamp', 'bless']) {
     assert.match(html, new RegExp(`data-paralodge-action="${action}"`));
   }
+  assert.match(html, /data-lamp-count=/);
+  assert.match(html, /data-same-count=/);
+  assert.match(html, /data-bless-count=/);
+  assert.match(html, /data-reaction-counts/);
+  assert.match(html, /data-kin-summary/);
+  assert.match(html, /updateWishCounters/);
+  assert.match(html, /count\.textContent = lamp \+ ' 盏灯 · ' \+ same \+ ' 位同关 · ' \+ bless \+ ' 句祝愿'/);
+  assert.match(html, /summary\.textContent = \(summary\.dataset\.fellowCount \|\| '0'\) \+ ' 个同关的人来过这里，' \+ \(summary\.dataset\.lampTotal \|\| '0'\) \+ ' 盏灯还亮着/);
   assert.match(html, /action-toast/);
   for (const space of ['愿力大厅', '公寓', '聚会间', '商业街', '陪护室', '记忆墙']) {
     assert.match(html, new RegExp(`>${space}<`));
@@ -205,6 +213,9 @@ test('从房间进入发愿页时保留房间归属', () => {
   assert.match(html, /href="\/my-room\/foreign"/);
   assert.match(html, /去我的房间/);
   assert.match(html, /data-paralodge-action="save-wish"/);
+  assert.match(html, /button\.textContent = '正在挂上'/);
+  assert.match(html, /button\.textContent = '再试一次'/);
+  assert.match(html, /刚才没有挂上，请再试一次/);
   assert.match(html, /data-room-label="异乡室"/);
   assert.match(html, /data-room-full-label="异乡室 401"/);
   assert.match(html, /\/assets\/paralodge\/spaces\/apartment-room\.png/);
@@ -560,6 +571,19 @@ test('API fallback 支持匿名身份、真实愿牌读取和互动写入', asyn
   });
   assert.equal(action.statusCode, 201);
   assert.equal(action.json.reaction.kind, 'same');
+  const reacted = await callApi('GET', '/api/wishes?spaceKey=apartment&gateKey=foreign&limit=10');
+  const createdWish = reacted.json.wishes.find((wish) => wish.id === created.json.wish.id);
+  assert.equal(createdWish.reactions.same, 1);
+
+  await callApi('POST', '/api/wishes', {
+    guestId: 'debug-hidden-1',
+    spaceKey: 'apartment',
+    gateKey: 'foreign',
+    roomLabel: '异乡室',
+    text: '内部调试留言不应显示'
+  });
+  const publicWishes = await callApi('GET', '/api/wishes?spaceKey=apartment&gateKey=foreign&limit=10');
+  assert.doesNotMatch(JSON.stringify(publicWishes.json.wishes), /内部调试留言不应显示/);
 
   const meetup = await callApi('POST', '/api/meetups', {
     guestId: 'guest-test-1',
