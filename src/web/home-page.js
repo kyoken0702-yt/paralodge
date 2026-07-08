@@ -1338,10 +1338,11 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 .space-action-layer .space-feed,.space-action-layer .room-types,.space-action-layer .shop-system,.personal-page{margin-inline:6px}
 .space-action-layer .space-stage+section{margin-top:8px;position:relative;z-index:3}
 .scene-paper{background-image:linear-gradient(180deg,rgba(247,230,204,.98),rgba(231,199,156,.96))!important;color:#241205!important;border-color:rgba(255,236,184,.62)!important;box-shadow:0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18)!important}
+.space-action-layer .scene-paper{background-image:linear-gradient(180deg,rgba(250,235,211,.98),rgba(235,203,163,.97))!important;background-color:#ead0a5!important;color:#1f1006!important;border-color:rgba(255,232,174,.70)!important}
 .scene-caption{display:grid;gap:4px;margin-bottom:8px}
-.scene-caption span{width:fit-content;border-radius:999px;background:rgba(151,94,24,.18);color:#8b570f!important;padding:3px 8px;font-size:12px!important;font-weight:900!important}
-.scene-caption h3{margin:0!important;color:#241205!important;font-size:22px!important;line-height:1.15;font-weight:900!important}
-.scene-caption p{margin:0!important;color:#624025!important;font-size:15px!important;line-height:1.45;font-weight:760!important}
+.scene-caption span{width:fit-content;border-radius:999px;background:rgba(151,94,24,.22);color:#8b570f!important;padding:3px 8px;font-size:12px!important;font-weight:900!important}
+.scene-caption h3{margin:0!important;color:#1f1006!important;font-size:22px!important;line-height:1.15;font-weight:900!important;text-shadow:none!important}
+.scene-caption p{margin:0!important;color:#3f2412!important;font-size:15px!important;line-height:1.45;font-weight:820!important;text-shadow:none!important}
 .scene-paper .live-strip{background:rgba(255,250,240,.82);border-color:rgba(122,79,23,.24);box-shadow:inset 0 0 0 1px rgba(255,255,255,.20)}
 .scene-paper .live-strip strong{color:#8a5a1b;font-weight:900}
 .scene-paper .live-strip span{color:#5a3922;font-weight:760}

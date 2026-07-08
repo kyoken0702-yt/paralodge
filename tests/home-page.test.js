@@ -496,6 +496,9 @@ test('空间页面有主画面舞台与灯光状态变化', () => {
   assert.match(html, /\.space-action-layer \.space-stage\+section\{margin-top:8px;position:relative;z-index:3\}/);
   assert.doesNotMatch(html, /\.space-action-layer \.space-stage\+section\{margin-top:-/);
   assert.match(html, /\.scene-paper\{background-image:linear-gradient\(180deg,rgba\(247,230,204,\.98\),rgba\(231,199,156,\.96\)\)!important/);
+  assert.match(html, /\.space-action-layer \.scene-paper\{background-image:linear-gradient\(180deg,rgba\(250,235,211,\.98\),rgba\(235,203,163,\.97\)\)!important;background-color:#ead0a5!important;color:#1f1006!important/);
+  assert.match(html, /\.scene-caption h3\{[^}]*color:#1f1006!important/);
+  assert.match(html, /\.scene-caption p\{[^}]*color:#3f2412!important/);
   assert.match(html, /\.space-action-layer button,\.space-action-layer a,\.scene-actions,\.gate-response p,\.wish-success a,\.space-tabs\{opacity:0;animation:roomActions \.42s ease-out 1\.18s forwards\}/);
   assert.match(html, /\.space-action-layer \.space-feed,[^{}]*\.space-action-layer \.room-types,[^{}]*\.space-action-layer \.shop-system,[^{}]*\.personal-page\{margin-inline:6px\}/);
   assertNoForbidden(html);
