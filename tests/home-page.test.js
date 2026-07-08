@@ -464,8 +464,8 @@ test('阿青姐引导和空间方框视觉语法区分', () => {
   assert.match(html, /\.aqing-bubble\{border:0!important;background:transparent!important;box-shadow:none!important/);
   assert.match(html, /\.aqing-bubble strong\{color:#fff7e8!important;text-shadow:/);
   assert.match(html, /\.place-card,\.kin-confirm,\.gate-response,\.room-belonging,\.return-latest,\.space-action-layer \.space-feed/);
-  assert.match(html, /border:1px solid rgba\(255,218,145,\.34\)!important/);
-  assert.match(html, /background-image:linear-gradient\(145deg,rgba\(74,41,20,\.34\),rgba\(4,8,18,\.62\)\)!important/);
+  assert.match(html, /border:1px solid rgba\(255,218,145,\.46\)!important/);
+  assert.match(html, /background-image:linear-gradient\(145deg,rgba\(116,67,34,\.66\),rgba\(24,17,15,\.54\)\)!important/);
   assertNoForbidden(html);
 });
 

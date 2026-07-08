@@ -608,6 +608,37 @@ function renderSpaceTabs(currentPath = '/') {
   return `<nav class="phone-tabs space-tabs" aria-label="一级空间" data-cinema-step="action">${tabs.map(([href, label]) => `<a class="${activePath === href ? 'current' : ''}" href="${href}">${label}</a>`).join('')}</nav>`;
 }
 
+function renderLampIcon() {
+  return `<svg class="lamp-icon" viewBox="0 0 64 76" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="lampGlow" cx="50%" cy="38%" r="54%">
+        <stop offset="0%" stop-color="#fff8d7"/>
+        <stop offset="38%" stop-color="#ffd66f"/>
+        <stop offset="70%" stop-color="#c87431"/>
+        <stop offset="100%" stop-color="#5c2418"/>
+      </radialGradient>
+      <linearGradient id="lampBowl" x1="0%" x2="0%" y1="0%" y2="100%">
+        <stop offset="0%" stop-color="#ffe8a0"/>
+        <stop offset="54%" stop-color="#b85f2a"/>
+        <stop offset="100%" stop-color="#4c1c15"/>
+      </linearGradient>
+      <filter id="lampSoftGlow" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="5" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="32" cy="40" rx="26" ry="25" fill="rgba(255,205,92,.22)" filter="url(#lampSoftGlow)"/>
+    <path d="M18 30c0-11 7-20 14-20s14 9 14 20c0 16-9 25-14 31-5-6-14-15-14-31Z" fill="url(#lampGlow)" stroke="#ffe6a0" stroke-width="2"/>
+    <path d="M27 34c0-8 4-14 5-16 2 4 7 8 7 16 0 8-4 13-7 17-3-4-5-9-5-17Z" fill="#fff7d2" opacity=".96"/>
+    <path d="M14 49c4 9 12 14 18 14s14-5 18-14v8c0 8-8 15-18 15s-18-7-18-15v-8Z" fill="url(#lampBowl)" stroke="#ffd98a" stroke-width="2"/>
+    <path d="M17 49c4 4 9 6 15 6s11-2 15-6" fill="none" stroke="#fff0b6" stroke-width="3" stroke-linecap="round"/>
+    <path d="M26 68h12" stroke="#ffe0a0" stroke-width="3" stroke-linecap="round"/>
+  </svg>`;
+}
+
 function renderSpaceStage(space, options = {}) {
   const scene = SPACE_SCENES[space.key] || SPACE_SCENES.hall;
   const mood = SPACE_MOODS[space.key] || SPACE_MOODS.hall;
@@ -617,7 +648,7 @@ function renderSpaceStage(space, options = {}) {
   const note = options.note || mood.note || '愿牌会挂在灯下';
   return `<section class="space-stage" data-cinema-step="arrival" data-space-stage="${esc(space.key)}" style="${imageStyle(space.image, space.key)}">
     <div class="stage-plaque"><strong>${esc(title)}</strong><span>${esc(line)}</span></div>
-    <div class="stage-lamp" data-stage-lamp><b></b><span>${esc(anchor)}</span></div>
+    <div class="stage-lamp" data-stage-lamp>${renderLampIcon()}<span>${esc(anchor)}</span></div>
     <div class="stage-note">${esc(note)}</div>
   </section>`;
 }
@@ -1114,8 +1145,8 @@ body[data-route="/"] .app-top,body[data-route^="/gate/"] .app-top,body[data-rout
 .space-action-layer .wish-actions button{background:#ead7be;color:#3a2414;border:0}
 .app-actions{grid-template-columns:repeat(5,minmax(0,1fr))}
 .app-line-bind{font-size:13px}
-.space-tabs{grid-template-columns:repeat(3,1fr);gap:4px}
-.space-tabs a{font-size:11px;line-height:1.15;border-radius:10px;padding:7px 2px}
+.space-tabs{grid-template-columns:repeat(3,1fr);gap:6px}
+.space-tabs a{min-height:34px;display:grid;place-items:center;font-size:clamp(13px,3.6vw,15px);line-height:1.12;border-radius:11px;padding:8px 4px}
 .space-tabs a.current{background:rgba(244,201,120,.18);box-shadow:inset 0 0 0 1px rgba(255,228,166,.35)}
 .home-app-screen{grid-template-rows:minmax(0,1fr) auto;gap:8px;padding:8px 14px 10px;background-color:#061325;background-image:linear-gradient(180deg,rgba(4,8,18,.03) 0%,rgba(4,8,18,.02) 28%,rgba(4,8,18,.10) 55%,rgba(4,8,18,.84) 100%),var(--space-image),linear-gradient(145deg,#061325,#0b1628);background-position:center 118px,center 118px,center;background-repeat:no-repeat;background-size:96% auto,96% auto,cover}
 .home-app-hero{position:relative;min-height:clamp(390px,59vh,500px);display:grid;align-content:start}
@@ -1140,7 +1171,7 @@ body[data-route="/"] .app-top,body[data-route^="/gate/"] .app-top,body[data-rout
 .gate-choice-grid strong{font-size:15px;line-height:1.16}
 .gate-choice-grid em{margin-top:4px;color:#5f422c;font-style:normal;font-size:12px;line-height:1.28;font-weight:650}
 .place-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px}
-.place-card{min-height:70px;display:grid;align-content:end;border:1px solid rgba(255,228,166,.26);border-radius:14px;background:linear-gradient(145deg,rgba(87,47,24,.52),rgba(5,8,14,.68));padding:9px;box-shadow:inset 0 -24px 34px rgba(0,0,0,.32)}
+.place-card{min-height:70px;display:grid;align-content:end;border:1px solid rgba(255,228,166,.42);border-radius:14px;background:linear-gradient(145deg,rgba(104,62,31,.70),rgba(28,18,14,.56));padding:9px;box-shadow:inset 0 0 0 1px rgba(255,238,190,.06),inset 0 -16px 28px rgba(0,0,0,.18),0 12px 28px rgba(0,0,0,.20)}
 .place-card:first-child{grid-column:span 2}
 .place-card strong{color:var(--gold2);font-size:17px;line-height:1.1}
 .place-card span{display:block;margin-top:4px;color:rgba(255,247,232,.78);font-size:12px;line-height:1.32;font-weight:760}
@@ -1271,27 +1302,29 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 .phone-screen button,.phone-screen a,.chip-row button,.chip-row a,.destination-actions button,.soft-action,.primary-action,.feed-card button,.similar-lights button,.gate-response a,.wish-success a,.space-tabs a,.place-card b,.card-actions a{font-weight:700;letter-spacing:0}
 .chip-row button{font-size:15px}
 .destination-actions button{font-size:16px}
-.space-tabs a{font-weight:650}
-.phone-screen{background-color:var(--space-depth,#1b120d);background-image:radial-gradient(circle at 50% 30%,var(--space-tint,rgba(244,201,120,.12)),transparent 30%),linear-gradient(180deg,rgba(6,8,12,.10),rgba(6,8,12,.88)),var(--space-image),linear-gradient(145deg,#1b120d,#5b3418)}
+.space-tabs a{font-weight:800}
+.phone-screen{background-color:var(--space-depth,#1b120d);background-image:radial-gradient(circle at 50% 30%,var(--space-tint,rgba(244,201,120,.18)),transparent 34%),linear-gradient(180deg,rgba(6,8,12,.04),rgba(6,8,12,.68)),var(--space-image),linear-gradient(145deg,#1b120d,#5b3418)}
 .home-app-screen{background-color:#061325;background-image:linear-gradient(180deg,rgba(4,8,18,.03) 0%,rgba(4,8,18,.02) 28%,rgba(4,8,18,.10) 55%,rgba(4,8,18,.84) 100%),var(--space-image),linear-gradient(145deg,#061325,#0b1628)!important;background-position:center 126px,center 126px,center!important;background-repeat:no-repeat!important;background-size:86% auto,86% auto,cover!important}
 .space-action-layer{padding-bottom:12px;align-content:start}
 .personal-app-screen .space-action-layer,.gate-app-screen .space-action-layer,.wish-app-screen .space-action-layer{padding-bottom:18px}
 .aqing-bubble{border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important;padding:0!important;gap:9px;max-width:100%}
 .aqing-bubble strong{color:#fff7e8!important;text-shadow:0 2px 10px rgba(0,0,0,.72),0 0 14px rgba(244,201,120,.18);font-size:clamp(14px,3.8vw,16px)!important;line-height:1.35}
 .aqing-avatar{box-shadow:0 0 0 1px rgba(255,228,166,.58),0 8px 22px rgba(0,0,0,.42)!important}
-.place-card,.kin-confirm,.gate-response,.room-belonging,.return-latest,.space-action-layer .space-feed,.space-action-layer .room-types,.space-action-layer .shop-system{border:1px solid rgba(255,218,145,.34)!important;background-image:linear-gradient(145deg,rgba(74,41,20,.34),rgba(4,8,18,.62))!important;box-shadow:inset 0 0 0 1px rgba(255,228,166,.045),inset 0 -22px 42px rgba(0,0,0,.24),0 16px 42px rgba(0,0,0,.24)!important}
+.place-card,.kin-confirm,.gate-response,.room-belonging,.return-latest,.space-action-layer .space-feed,.space-action-layer .room-types,.space-action-layer .shop-system{border:1px solid rgba(255,218,145,.46)!important;background-image:linear-gradient(145deg,rgba(116,67,34,.66),rgba(24,17,15,.54))!important;box-shadow:inset 0 0 0 1px rgba(255,238,190,.07),inset 0 -14px 30px rgba(0,0,0,.16),0 16px 38px rgba(0,0,0,.20)!important}
 .feed-card,.paper-card,.similar-lights article,.my-ledger-card,.room-life article,.building-broadcast article{box-shadow:0 12px 34px rgba(0,0,0,.26),inset 0 0 0 1px rgba(255,255,255,.18)}
-.space-stage{position:relative;min-height:clamp(224px,43vh,318px);overflow:hidden;border-radius:22px;border:1px solid rgba(255,218,145,.30);background-image:linear-gradient(180deg,rgba(4,8,18,.02),rgba(4,8,18,.12) 35%,rgba(4,8,18,.74)),var(--space-image),linear-gradient(145deg,#0b1628,#2d190d);background-size:cover,cover,cover;background-position:center;box-shadow:0 18px 56px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,228,166,.05)}
-.space-stage:after{content:"";position:absolute;inset:auto 0 0;height:52%;background:linear-gradient(180deg,transparent,rgba(4,8,18,.62));pointer-events:none}
+.space-stage{position:relative;min-height:clamp(224px,43vh,318px);overflow:hidden;border-radius:22px;border:1px solid rgba(255,218,145,.36);background-image:linear-gradient(180deg,rgba(4,8,18,.00),rgba(4,8,18,.06) 35%,rgba(4,8,18,.48)),var(--space-image),linear-gradient(145deg,#0b1628,#2d190d);background-size:cover,cover,cover;background-position:center;box-shadow:0 18px 56px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,228,166,.08);filter:brightness(1.14) contrast(1.06) saturate(1.06)}
+.space-stage:after{content:"";position:absolute;inset:auto 0 0;height:46%;background:linear-gradient(180deg,transparent,rgba(4,8,18,.40));pointer-events:none}
 .stage-plaque{position:absolute;left:14px;right:14px;bottom:42px;z-index:1;text-shadow:0 3px 14px rgba(0,0,0,.78)}
 .stage-plaque strong,.stage-plaque span{display:block}
 .stage-plaque strong{color:#fff2cf;font-size:22px;line-height:1.12;font-weight:800}
 .stage-plaque span{margin-top:5px;color:rgba(255,247,232,.82);font-size:13px;line-height:1.38}
 .stage-note{position:absolute;left:14px;bottom:12px;z-index:1;border-radius:999px;background:rgba(5,8,14,.58);color:#ffe4a6;padding:6px 9px;font-size:12px;font-weight:650}
-.stage-lamp{position:absolute;right:18px;bottom:18px;z-index:2;display:grid;justify-items:center;gap:4px;color:#ffe4a6;font-size:11px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.72)}
-.stage-lamp b{width:28px;height:34px;border-radius:12px 12px 16px 16px;background:linear-gradient(180deg,#fff3bd 0 28%,#d28a3a 29%,#7c341f 100%);box-shadow:0 0 24px rgba(255,214,125,.62),0 0 50px rgba(255,186,80,.26)}
+.stage-lamp{position:absolute;right:16px;bottom:16px;z-index:2;display:grid;justify-items:center;gap:2px;color:#ffe4a6;font-size:11px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.72)}
+.lamp-icon{width:42px;height:50px;overflow:visible;filter:drop-shadow(0 0 12px rgba(255,220,135,.78)) drop-shadow(0 0 28px rgba(255,170,70,.36))}
+.stage-lamp span{position:relative}
+.stage-lamp span:before{content:"";position:absolute;left:50%;top:-9px;width:42px;height:10px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(255,202,96,.28),transparent 68%);z-index:-1}
 .stage-lit .space-stage,.space-stage.stage-lit{border-color:rgba(255,228,166,.62);box-shadow:0 20px 62px rgba(0,0,0,.34),inset 0 0 44px rgba(244,201,120,.18),0 0 28px rgba(244,201,120,.18)}
-.stage-lit .stage-lamp b,.space-stage.stage-lit .stage-lamp b{box-shadow:0 0 34px rgba(255,228,166,.88),0 0 80px rgba(255,184,80,.38)}
+.stage-lit .lamp-icon,.space-stage.stage-lit .lamp-icon{filter:drop-shadow(0 0 18px rgba(255,238,178,.96)) drop-shadow(0 0 44px rgba(255,172,70,.58)) brightness(1.16)}
 .phone-screen.stage-lit{filter:saturate(1.12) brightness(1.10);box-shadow:0 24px 78px rgba(0,0,0,.46),inset 0 0 0 1px rgba(255,228,166,.22),inset 0 0 110px rgba(244,201,120,.18)}
 .phone-screen>*{position:relative;z-index:1}
 .kin-echo{display:block;margin-top:8px;border-radius:999px;background:rgba(255,228,166,.12);color:#ffe4a6;font-style:normal;font-size:12px;line-height:1.35;padding:6px 9px;animation:roomWords .42s ease-out both}
