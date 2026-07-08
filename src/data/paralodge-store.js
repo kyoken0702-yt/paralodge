@@ -34,6 +34,9 @@ const SAMPLE_ROWS = [
   }
 ];
 
+const FALLBACK_WISHES = SAMPLE_ROWS.map((row) => ({ ...row, reactions: { ...row.reactions } }));
+const FALLBACK_REACTIONS = [];
+
 function isConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY);
 }
@@ -100,8 +103,8 @@ function countReactions(rows, wishId) {
 
 async function listWishes({ spaceKey, gateKey, limit = 10 } = {}) {
   if (!isConfigured()) {
-    return SAMPLE_ROWS
-      .filter((row) => !spaceKey || row.space_key === spaceKey || row.gate_key === gateKey)
+    return FALLBACK_WISHES
+      .filter((row) => (!spaceKey || row.space_key === spaceKey) && (!gateKey || row.gate_key === gateKey))
       .slice(0, limit);
   }
   const filters = [];
@@ -121,18 +124,27 @@ async function listWishes({ spaceKey, gateKey, limit = 10 } = {}) {
 
 async function createWish(payload) {
   const guest = await ensureGuest(payload.guestId);
+  const text = sanitizeText(payload.text);
+  if (!text) {
+    const error = new Error('请先写一句真正想放下的话');
+    error.status = 400;
+    throw error;
+  }
   if (!isConfigured()) {
-    return {
+    const row = {
       id: `local-${Date.now()}`,
       guest_id: guest.guest_id,
       space_key: sanitizeText(payload.spaceKey, 'apartment'),
       gate_key: sanitizeText(payload.gateKey, 'foreign'),
       place_key: sanitizeText(payload.placeKey),
       room_label: sanitizeText(payload.roomLabel, '异乡室'),
-      text: sanitizeText(payload.text),
+      text,
+      created_at: new Date().toISOString(),
       reactions: { same: 0, lamp: 1, bless: 0 },
       local: true
     };
+    FALLBACK_WISHES.unshift(row);
+    return row;
   }
   const row = {
     guest_id: guest.guest_id,
@@ -140,7 +152,7 @@ async function createWish(payload) {
     gate_key: sanitizeText(payload.gateKey, 'foreign'),
     place_key: sanitizeText(payload.placeKey) || null,
     room_label: sanitizeText(payload.roomLabel, '异乡室'),
-    text: sanitizeText(payload.text),
+    text,
     visibility: 'anonymous_public',
     status: 'active'
   };
@@ -156,7 +168,14 @@ async function createReaction(payload) {
   const guest = await ensureGuest(payload.guestId);
   const kind = ['same', 'lamp', 'bless'].includes(payload.kind) ? payload.kind : 'lamp';
   if (!isConfigured()) {
-    return { id: `local-${Date.now()}`, guest_id: guest.guest_id, wish_id: payload.wishId, kind, local: true };
+    const row = { id: `local-${Date.now()}`, guest_id: guest.guest_id, wish_id: payload.wishId, kind, created_at: new Date().toISOString(), local: true };
+    FALLBACK_REACTIONS.unshift(row);
+    const wish = FALLBACK_WISHES.find((item) => item.id === payload.wishId);
+    if (wish) {
+      wish.reactions = wish.reactions || { same: 0, lamp: 0, bless: 0 };
+      wish.reactions[kind] = (wish.reactions[kind] || 0) + 1;
+    }
+    return row;
   }
   const created = await supabaseFetch('paralodge_reactions', {
     method: 'POST',
@@ -211,6 +230,18 @@ async function createEvent({ guestId, eventType, payload = {} }) {
 async function listEchoes(guestId) {
   const guest = await ensureGuest(guestId);
   if (!isConfigured()) {
+    const ownWishes = FALLBACK_WISHES.filter((wish) => wish.guest_id === guest.guest_id);
+    const ownIds = new Set(ownWishes.map((wish) => wish.id));
+    const wishById = Object.fromEntries(ownWishes.map((wish) => [wish.id, wish]));
+    const names = { same: '有人说，他也在你这一关', lamp: '有人给你的愿望点了一盏灯', bless: '有人把“愿你过关”留在你的门边' };
+    const echoes = FALLBACK_REACTIONS
+      .filter((reaction) => ownIds.has(reaction.wish_id) && reaction.guest_id !== guest.guest_id)
+      .slice(0, 10)
+      .map((reaction) => ({
+        title: names[reaction.kind] || '有人回应了你',
+        text: `${wishById[reaction.wish_id]?.room_label || '你的房间'}：${wishById[reaction.wish_id]?.text || '灯还亮着'}`
+      }));
+    if (echoes.length) return echoes;
     return [
       { title: '有人给你的愿望点了一盏灯', text: '这栋楼很安静，但你的灯还亮着' },
       { title: '有人说，他也在你这一关', text: '这句话已经留在门边' }

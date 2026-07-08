@@ -159,6 +159,7 @@ test('房间详情先看见同类，再出现低压力互动和发愿入口', ()
   assert.match(html, /data-kin-confirm/);
   assert.match(html, /个同关的人来过这里/);
   assert.match(html, /盏灯还亮着/);
+  assert.match(html, /真实住民留下过这些话/);
   assert.match(html, /对方会知道有人同路/);
   assert.match(html, /一楼小桌/);
   assert.match(html, /要不要也把你的愿牌挂在异乡室？/);
@@ -185,6 +186,8 @@ test('发愿页只让用户放下一句愿望，不展示复杂规则', () => {
   assert.match(html, /data-wish-page/);
   assert.match(html, /放下一张愿牌/);
   assert.match(html, /我现在最过不去的一关是：/);
+  assert.match(html, /placeholder="写你真正卡在心里的那一句，不用漂亮，不用完整"/);
+  assert.doesNotMatch(html, />希望能在异乡找到属于自己的位置，慢慢站稳脚跟，不再那么焦虑和孤单<\/textarea>/);
   assert.match(html, /挂到灯下/);
   assert.match(html, /愿牌已挂上/);
   assert.doesNotMatch(html, /<header class="top app-top">/);
@@ -490,8 +493,9 @@ test('空间页面有主画面舞台与灯光状态变化', () => {
   assert.doesNotMatch(html, /radial-gradient\(circle at 74% 45%/);
   assert.match(html, /kin-echo/);
   assert.match(html, /paralodge_v18_metrics/);
-  assert.match(html, /\.space-action-layer \.space-stage\+section\{margin-top:-18px/);
-  assert.match(html, /\.scene-paper\{background-image:linear-gradient\(180deg,rgba\(245,225,198,\.92\),rgba\(234,209,174,\.88\)\)!important/);
+  assert.match(html, /\.space-action-layer \.space-stage\+section\{margin-top:8px;position:relative;z-index:3\}/);
+  assert.doesNotMatch(html, /\.space-action-layer \.space-stage\+section\{margin-top:-/);
+  assert.match(html, /\.scene-paper\{background-image:linear-gradient\(180deg,rgba\(247,230,204,\.98\),rgba\(231,199,156,\.96\)\)!important/);
   assert.match(html, /\.space-action-layer button,\.space-action-layer a,\.scene-actions,\.gate-response p,\.wish-success a,\.space-tabs\{opacity:0;animation:roomActions \.42s ease-out 1\.18s forwards\}/);
   assert.match(html, /\.space-action-layer \.space-feed,[^{}]*\.space-action-layer \.room-types,[^{}]*\.space-action-layer \.shop-system,[^{}]*\.personal-page\{margin-inline:6px\}/);
   assertNoForbidden(html);
@@ -543,6 +547,8 @@ test('API fallback 支持匿名身份、真实愿牌读取和互动写入', asyn
   });
   assert.equal(created.statusCode, 201);
   assert.equal(created.json.wish.room_label, '异乡室');
+  const reread = await callApi('GET', '/api/wishes?spaceKey=apartment&gateKey=foreign&limit=10');
+  assert.match(JSON.stringify(reread.json.wishes), /今晚先把这句话放在异乡室/);
 
   const action = await callApi('POST', '/api/actions', {
     guestId: 'guest-test-1',

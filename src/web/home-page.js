@@ -712,10 +712,15 @@ function renderHallWishFlow() {
 
 function renderEmotionWishCard(card) {
   const wishId = card.id || `sample-${Buffer.from(card.text).toString('base64').slice(0, 10).replace(/[^a-zA-Z0-9]/g, '')}`;
+  const meta = card.meta || `${card.room_label || '匿名房间'} · 匿名住民`;
+  const lamps = card.lamps ?? card.reactions?.lamp ?? 0;
+  const same = card.reactions?.same ?? 0;
+  const bless = card.reactions?.bless ?? 0;
+  const countLine = card.reactions ? `${lamps} 盏灯 · ${same} 位同关 · ${bless} 句祝愿` : `${lamps} 盏灯`;
   return `<article class="feed-card emotion-card" data-wish-id="${esc(wishId)}">
-    <span>${esc(card.meta)}</span>
+    <span>${esc(meta)}</span>
     <p>${esc(card.text)}</p>
-    <b>${card.lamps} 盏灯</b>
+    <b>${esc(countLine)}</b>
     <em>你做的动作，对方会收到一条回响</em>
     <div><button type="button" data-paralodge-action="same">我也在这一关</button><button type="button" data-paralodge-action="lamp">给你留一灯</button><button type="button" data-paralodge-action="bless">愿你过关</button></div>
   </article>`;
@@ -796,6 +801,7 @@ function renderGate(route) {
           <em>你做任何动作，对方都会收到一条温柔回响；你也会知道这盏灯已经被看见</em>
         </section>
         <section class="space-feed emotion-feed gate-feed" data-gate-feed data-space-key="${esc(gateSpace.key)}" data-gate-key="${esc(gate.key)}" data-room-label="${esc(target.room)}">
+          <strong class="real-feed-title">这个房间里，真实住民留下过这些话</strong>
           ${gate.wishes.map(renderEmotionWishCard).join('')}
         </section>
         <section class="gate-response">
@@ -851,7 +857,7 @@ function renderWishPage(route = null) {
         <section class="wish-flow" data-wish-flow>
           <section class="paper-card wish-form-card">
             <p>${esc(prompt)}</p>
-            <textarea aria-label="愿望内容">${esc(active.wishes[0]?.text || SAMPLE_WISH.text)}</textarea>
+            <textarea aria-label="愿望内容" placeholder="写你真正卡在心里的那一句，不用漂亮，不用完整"></textarea>
             <div class="chip-row">${GATES.map((item) => `<a href="/wish/${item.key}">${esc(item.room)}</a>`).join('')}</div>
             <button type="button" class="primary-action" data-paralodge-action="save-wish" data-space-key="${esc(targetSpace.key)}" data-place-key="${esc(routeContext?.place?.key || '')}" data-room-key="${esc(active.key)}" data-room-label="${esc(gate ? targetRoom : active.room)}" data-room-full-label="${esc(roomNumberFor(gate ? targetRoom : active.room))}" data-room-link="${esc(roomLink)}">${esc(buttonText)}</button>
           </section>
@@ -1199,6 +1205,7 @@ body[data-route="/"] .app-top,body[data-route^="/gate/"] .app-top,body[data-rout
 .gate-app-hero p{font-size:clamp(14px,3.8vw,17px)}
 .gate-action-layer{align-content:start}
 .gate-feed{display:grid;gap:9px}
+.real-feed-title{display:block;color:#ffe4a6;font-size:14px;line-height:1.35;font-weight:800;text-shadow:0 2px 10px rgba(0,0,0,.42)}
 .gate-response{border:1px solid rgba(255,228,166,.26);border-radius:16px;background:rgba(5,8,14,.72);padding:12px;box-shadow:0 12px 40px rgba(0,0,0,.26)}
 .gate-response strong,.gate-response span,.gate-response b{display:block}
 .gate-response strong{color:var(--gold2);font-size:17px}
@@ -1329,15 +1336,15 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 .phone-screen>*{position:relative;z-index:1}
 .kin-echo{display:block;margin-top:8px;border-radius:999px;background:rgba(255,228,166,.12);color:#ffe4a6;font-style:normal;font-size:12px;line-height:1.35;padding:6px 9px;animation:roomWords .42s ease-out both}
 .space-action-layer .space-feed,.space-action-layer .room-types,.space-action-layer .shop-system,.personal-page{margin-inline:6px}
-.space-action-layer .space-stage+section{margin-top:-18px;position:relative;z-index:3}
-.scene-paper{background-image:linear-gradient(180deg,rgba(245,225,198,.92),rgba(234,209,174,.88))!important;color:#2d1c10!important;border-color:rgba(255,232,180,.42)!important;box-shadow:0 -10px 34px rgba(0,0,0,.22),0 16px 42px rgba(0,0,0,.24)!important}
+.space-action-layer .space-stage+section{margin-top:8px;position:relative;z-index:3}
+.scene-paper{background-image:linear-gradient(180deg,rgba(247,230,204,.98),rgba(231,199,156,.96))!important;color:#241205!important;border-color:rgba(255,236,184,.62)!important;box-shadow:0 14px 34px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.18)!important}
 .scene-caption{display:grid;gap:4px;margin-bottom:8px}
-.scene-caption span{width:fit-content;border-radius:999px;background:rgba(123,78,24,.14);color:#8a5a1b!important;padding:3px 8px;font-size:11px!important;font-weight:900!important}
-.scene-caption h3{margin:0!important;color:#2d1c10!important;font-size:20px!important;line-height:1.15}
-.scene-caption p{margin:0!important;color:#5f422c!important;font-size:13px!important;line-height:1.45}
-.scene-paper .live-strip{background:rgba(255,248,236,.58);border-color:rgba(122,79,23,.16)}
-.scene-paper .live-strip strong{color:#8a5a1b}
-.scene-paper .live-strip span{color:#5f422c}
+.scene-caption span{width:fit-content;border-radius:999px;background:rgba(151,94,24,.18);color:#8b570f!important;padding:3px 8px;font-size:12px!important;font-weight:900!important}
+.scene-caption h3{margin:0!important;color:#241205!important;font-size:22px!important;line-height:1.15;font-weight:900!important}
+.scene-caption p{margin:0!important;color:#624025!important;font-size:15px!important;line-height:1.45;font-weight:760!important}
+.scene-paper .live-strip{background:rgba(255,250,240,.82);border-color:rgba(122,79,23,.24);box-shadow:inset 0 0 0 1px rgba(255,255,255,.20)}
+.scene-paper .live-strip strong{color:#8a5a1b;font-weight:900}
+.scene-paper .live-strip span{color:#5a3922;font-weight:760}
 .scene-paper .similar-lights>strong{color:#8a5a1b}
 .scene-actions{display:grid;gap:8px}
 .scene-actions .place-grid{margin:0}
@@ -1479,7 +1486,7 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
     params.set('limit', '10');
     apiJson('/api/wishes?' + params.toString()).then(function(data){
       if (!data.wishes || !data.wishes.length) return;
-      feed.innerHTML = data.wishes.map(renderClientWishCard).join('');
+      feed.innerHTML = '<strong class="real-feed-title">这个房间里，真实住民留下过这些话</strong>' + data.wishes.map(renderClientWishCard).join('');
     }).catch(function(){});
   }
   function loadEchoes(){
@@ -1618,12 +1625,19 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
     }
     if (kind === 'save-wish') {
       const textarea = document.querySelector('[data-wish-flow] textarea');
+      const wishText = textarea ? textarea.value.trim() : '';
+      if (!wishText) {
+        toast('先写一句你的真话，再挂上愿牌');
+        if (textarea) textarea.focus();
+        return;
+      }
       const roomLabel = button.getAttribute('data-room-label') || '这间房';
       const fullLabel = button.getAttribute('data-room-full-label') || roomLabel;
       current.my_room = {
         key: button.getAttribute('data-room-key') || 'foreign',
         label: roomLabel,
         full_label: fullLabel,
+        wish_text: wishText,
         link: button.getAttribute('data-room-link') || '/my-room',
         saved_at: new Date().toISOString()
       };
@@ -1635,7 +1649,7 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
 	        gateKey: button.getAttribute('data-room-key') || '',
 	        placeKey: button.getAttribute('data-place-key') || '',
 	        roomLabel: roomLabel,
-	        text: textarea ? textarea.value.trim() : ''
+	        text: wishText
 	      }).then(function(data){
 	        if (data.wish && data.wish.id) current.last_wish_id = data.wish.id;
 	        save(current);
@@ -1697,10 +1711,12 @@ button[data-paralodge-action][disabled]{opacity:.82;filter:saturate(.82)}
     });
     const title = document.querySelector('[data-my-room-title]');
     const source = document.querySelector('[data-my-room-source]');
+    const wish = document.querySelector('[data-my-room-wish]');
     const aqing = document.querySelector('.my-room-aqing strong');
     const label = state.my_room.full_label || state.my_room.label;
     if (title && label) title.textContent = '你住进了' + label;
     if (source && label) source.textContent = '来自：' + label + ' · 匿名';
+    if (wish && state.my_room.wish_text) wish.textContent = state.my_room.wish_text;
     if (aqing && label) aqing.textContent = '阿青姐：你住进了' + label + '，这盏灯先替你守着';
   }
   if (state.return_card) {
